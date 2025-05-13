@@ -1,6 +1,7 @@
 
 import AbstractView from "./AbstractView.js";
 import { PongGame, eventListeners }  from "../scripts/pong/pong.js";
+ import { initCursorClickEffect } from "../visual/effects.js";
 
 export default class Pong extends AbstractView {
 private pongGame!: PongGame; 
@@ -163,6 +164,13 @@ loadJS() {
   // Initialize the Pong game
   this.pongGame = new PongGame();
 
+
+  //cursor click effect added
+    setTimeout(() => {
+    initCursorClickEffect();
+  }, 200);
+  //click effect 
+  
   // Wait for DOM content to be fully loaded
   setTimeout(() => {
     console.log("Attaching event listeners...");

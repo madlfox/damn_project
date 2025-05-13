@@ -33,3 +33,18 @@
     opacity: 0;
   }
 }
+
+.spark {
+	position: absolute;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+@keyframes animate {
+	100% {
+		transform: translate(var(--randomX), var(--randomY));
+		opacity: 0;
+	}
+}

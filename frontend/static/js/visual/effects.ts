@@ -233,35 +233,80 @@ export const loadTransition = (): void => {
 	lowerRect.style.top = "50%";
 };
 
-// Cursor click effect
 export const initCursorClickEffect = (): void => {
 	const body = document.querySelector('body') as HTMLElement | null;
-	const canvas = document.querySelector('canvas') as HTMLCanvasElement | null;
 
-	if (!body || !canvas) return;
+	// Ждём, пока canvas появится в DOM
+	const waitForCanvas = setInterval(() => {
+		const canvas = document.querySelector('canvas') as HTMLCanvasElement | null;
 
-	canvas.addEventListener('click', (event: MouseEvent) => {
-		for (let i = 0; i < 50; i++) {
-			const spark = document.createElement('div');
-			spark.className = 'spark';
+		if (canvas) {
+			clearInterval(waitForCanvas);
 
-			spark.style.top = `${event.clientY}px`;
-			spark.style.left = `${event.clientX}px`;
+			canvas.addEventListener('click', (event: MouseEvent) => {
+				for (let i = 0; i < 50; i++) {
+					const spark = document.createElement('div');
+					spark.className = 'spark';
 
-			const randomX: number = (Math.random() - 0.5) * window.innerWidth / 3;
-			const randomY: number = (Math.random() - 0.5) * window.innerHeight / 3;
+					spark.style.top = `${event.clientY}px`;
+					spark.style.left = `${event.clientX}px`;
 
-			spark.style.setProperty('--randomX', `${randomX}px`);
-			spark.style.setProperty('--randomY', `${randomY}px`);
+					// Рандомные координаты для анимации
+					const randomX: number = (Math.random() - 0.5) * window.innerWidth / 3;
+					const randomY: number = (Math.random() - 0.5) * window.innerHeight / 3;
 
-			const duration: number = Math.random() * 1.5 + 0.5;
-			spark.style.animation = `animate ${duration}s ease-out forwards`;
+					spark.style.setProperty('--randomX', `${randomX}px`);
+					spark.style.setProperty('--randomY', `${randomY}px`);
 
-			body.appendChild(spark);
+					// Рандомный цвет из палитры
+					const colors = ['#ff6b6b', '#ffb830', '#4ecdc4', '#1a535c', '#ffe66d', '#ff7f50', '#ff6347'];
+					spark.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
 
-			setTimeout(() => {
-				spark.remove();
-			}, 2000);
+					// Продолжительность анимации
+					const duration: number = Math.random() * 1.5 + 0.5;
+					spark.style.animation = `animate ${duration}s ease-out forwards`;
+
+					body?.appendChild(spark);
+
+					setTimeout(() => {
+						spark.remove();
+					}, 2000);
+				}
+			});
 		}
-	});
+	}, 100);
 };
+
+
+// // Cursor click effect
+// export const initCursorClickEffect = (): void => {
+// 	const body = document.querySelector('body') as HTMLElement | null;
+// 	const canvas = document.querySelector('canvas') as HTMLCanvasElement | null;
+
+// 	if (!body || !canvas) return;
+
+// 	canvas.addEventListener('click', (event: MouseEvent) => {
+// 		for (let i = 0; i < 50; i++) {
+// 			const spark = document.createElement('div');
+// 			spark.className = 'spark';
+
+// 			spark.style.top = `${event.clientY}px`;
+// 			spark.style.left = `${event.clientX}px`;
+
+// 			const randomX: number = (Math.random() - 0.5) * window.innerWidth / 3;
+// 			const randomY: number = (Math.random() - 0.5) * window.innerHeight / 3;
+
+// 			spark.style.setProperty('--randomX', `${randomX}px`);
+// 			spark.style.setProperty('--randomY', `${randomY}px`);
+
+// 			const duration: number = Math.random() * 1.5 + 0.5;
+// 			spark.style.animation = `animate ${duration}s ease-out forwards`;
+
+// 			body.appendChild(spark);
+
+// 			setTimeout(() => {
+// 				spark.remove();
+// 			}, 2000);
+// 		}
+// 	});
+// };
