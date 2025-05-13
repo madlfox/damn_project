@@ -1,255 +1,232 @@
-import PongControls from "./PongControls.js";
-import AbstractView from "./AbstractView.js";
 
+import AbstractView from "./AbstractView.js";
+import { PongGame, eventListeners }  from "../scripts/pong/pong.js";
 
 export default class Pong extends AbstractView {
-  private cvs!: HTMLCanvasElement;
-  private ctx!: CanvasRenderingContext2D;
-  private leftPaddle!: Paddle;
-  private rightPaddle!: Paddle;
-  public ball!: Ball;
-  private intervalId: number | undefined;
-  private leftScore: number = 0;
-  private rightScore: number = 0;
-  private keys: { [key: string]: boolean } = {}; 
-  private isPaused: boolean = false;
-  private isGameRunning: boolean = false;
+private pongGame!: PongGame; 
 
   constructor() {
     super();
     this.setTitle("Pong Game");
   }
 
-  async getHtml(): Promise<string> {
-    return `
-      <div class="text-center text-white">
-        <h1 class="text-4xl mb-5">Pong Game</h1>
-        <div class="flex justify-around text-2xl mb-5">
-            <div>Player 1: <span id="leftScore">0</span></div>
-            <div>Player 2: <span id="rightScore">0</span></div>
+ async getHtml(): Promise<string> {
+  return `
+   <!-- Main Pong Game Interface -->
+<div class="min-h-screen flex items-center justify-center pong-page">
+  
+  <!-- Toast Notification -->
+ <div class="fixed top-5 right-5 bg-gray-800 text-white p-3 rounded-lg hidden" id="liveToast">
+  <p id="toastBody" class="text-white text-center"></p>
+  <button 
+    type="button" 
+    class="text-white ml-4 hover:bg-gray-600 rounded px-2" 
+    aria-label="Close"
+    onclick="document.getElementById('liveToast').classList.add('hidden')">
+    ✖️
+  </button>
+</div>
+
+  <!-- Pause Modal -->
+  <div id="pauseModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-5 rounded-lg">
+      <h2 class="text-2xl text-center mb-4">Game Paused</h2>
+      <p class="text-center">Press escape to continue</p>
+    </div>
+  </div>
+
+  <!-- End Game Modal -->
+  <div id="endgameModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-5 rounded-lg">
+      <h2 class="text-2xl text-center mb-4" id="endgameModalWinner">Winner: </h2>
+      <p class="text-center" id="endgameModalScore">Score: </p>
+      <p class="text-center" id="endgameModalTime">Time: </p>
+      <button id="playAgainButton" class="bg-indigo-600 text-white py-2 px-4 mt-3 rounded-lg hover:bg-indigo-700">
+        Play Again
+      </button>
+      <button id="nextMatchButton" class="bg-green-600 text-white py-2 px-4 mt-3 rounded-lg hover:bg-green-700">
+        Next Match
+      </button>
+    </div>
+  </div>
+
+  <!-- Pong Game Container -->
+  <div class="flex flex-col items-center pong-interface-container">
+
+    <!-- Title and Info -->
+    <div class="text-center mb-4">
+      <p class="text-white text-4xl" animated-letters data-translate="pong">pong</p>
+      <hr class="border-white w-[400px] my-4">
+      <div class="flex justify-between text-white mb-3">
+        <div class="flex items-center">
+          <img src="/static/assets/UI/icons/score.svg" width="32px" class="mr-3" />
+          <p id="objectiveLabel" class="text-3xl">00</p>
         </div>
-        <canvas id="canvas" width="800" height="400" class="border border-white"></canvas>
+        <div class="flex items-center">
+          <img src="/static/assets/UI/icons/time.svg" width="32px" class="mr-3" />
+          <p id="timer" class="text-3xl">00:00</p>
+        </div>
       </div>
+    </div>
+
+    <!-- Game Area -->
+    <div class="w-full flex flex-col items-center mb-3" id="gameContainer">
+      <canvas class="squarer-glass border border-white" id="canvas" width="800" height="400"></canvas>
+      <button id="btnStart" class="bg-indigo-600 text-white py-2 px-4 mt-3 rounded-lg hover:bg-indigo-700">
+        Start Game
+      </button>
+    </div>
+
+    <!-- Player Boxes -->
+    <div class="grid grid-cols-2 gap-5 text-white pong-player-box-container">
+      <!-- Left Player -->
+      <div class="flex flex-col items-center justify-end p-3 bg-gray-800 rounded-lg pong-player-box">
+        <p class="text-2xl" id="leftScore">0</p>
+        <div id="colorBoxLeft" class="border border-white mb-3 w-24 h-5"></div>
+        <p class="text-lg" id="pMinimize1" data-translate="minimize"></p>
+        <p class="text-md" id="lMinimizeCD" data-translate="ready"></p>
+        <p class="text-2xl mt-1" id="leftPaddleName">Player 1</p>
+      </div>
+
+      <!-- Right Player -->
+      <div class="flex flex-col items-center justify-start p-3 bg-gray-800 rounded-lg pong-player-box">
+        <p class="text-2xl" id="rightScore">0</p>
+        <div id="colorBoxRight" class="border border-white mb-3 w-24 h-5"></div>
+        <p class="text-lg" id="pMinimize2" data-translate="minimize"></p>
+        <p class="text-md" id="rMinimizeCD" data-translate="ready"></p>
+        <p class="text-2xl mt-1" id="rightPaddleName">Player 2</p>
+      </div>
+    </div>
+
+    <!-- Navigation Button -->
+    <div class="flex justify-center mt-5">
+      <a 
+        role="button" 
+        class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 flex items-center justify-center" 
+        href="/pongMenu" 
+        data-link>
+        <img src="static/assets/UI/icons/left_arrow.svg" alt="return button" id="left-arrow">
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Not Available Message -->
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white games-page-mobile hidden">
+  <div class="p-5 glass">
+    <p class="text-center" data-translate="games-not-available-mobile">
+      Games are not available on mobile.
+    </p>
+  </div>
+  <div class="flex justify-center mt-5">
+    <a 
+      role="button" 
+      class="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 flex items-center justify-center" 
+      href="/" 
+      data-link>
+      <img src="static/assets/UI/icons/left_arrow.svg" alt="return button" id="left-arrow">
+    </a>
+  </div>
+<!-- Tournament Modal -->
+<div id="tournamentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+  <div class="bg-gray-800 p-5 rounded-lg text-white max-w-sm w-full">
+    <h2 class="text-2xl mb-3" id="playersTournament">Tournament Match</h2>
+    <p id="matchTournament" class="mb-3">Match: 1</p>
+<button class="bg-indigo-600 px-4 py-2 rounded hover:bg-indigo-700" id="closeTournament">
+  Close
+</button>
+
+
+  </div>
+</div>
+
+<!-- Match End Modal -->
+<!-- Add this somewhere inside your HTML, like under the endgameModal -->
+<p id="matchEndLabel" class="text-xl text-center hidden">You won the game!</p>
+
+<div id="tournamentMatchEndModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+  <div class="bg-gray-800 p-5 rounded-lg text-white max-w-sm w-full">
+    <h2 class="text-2xl mb-3" id="matchWinner">Winner: Player 1</h2>
+    <p id="matchId" class="mb-2">Match ID: 1</p>
+    <p id="matchTimeElapsed" class="mb-3">Time Elapsed: 00:00</p>
+  <button class="bg-indigo-600 px-4 py-2 rounded hover:bg-indigo-700" id="closeTournament">
+  Close
+</button>
+
+  </div>
+</div>
+
+
     `;
   }
+loadJS() {
+  // Initialize the Pong game
+  this.pongGame = new PongGame();
 
-  loadJS() {
-    window.addEventListener('DOMContentLoaded', () => {
-      this.initializeGame();
-    });
+  // Wait for DOM content to be fully loaded
+  setTimeout(() => {
+    console.log("Attaching event listeners...");
 
-    if (document.readyState === "complete") {
-      this.initializeGame();
-    }
-  }
+    // Type-safe casting
+    const closeTournamentButton = document.getElementById('closeTournament') as HTMLButtonElement;
+    // const closeMatchEndButton = document.getElementById('closeMatchEndModal') as HTMLButtonElement;
+    const closeMatchEndButton = document.querySelector('#tournamentMatchEndModal button') as HTMLButtonElement;
 
-  initializeGame() {
-    this.cvs = document.getElementById("canvas") as HTMLCanvasElement;
-    if (!this.cvs) {
-      throw new Error("Canvas not found!");
-    }
-    this.ctx = this.cvs.getContext("2d")!;
-    this.leftPaddle = new Paddle(10, this.cvs.height / 2 - 40, 15, 80);
-    this.rightPaddle = new Paddle(this.cvs.width - 25, this.cvs.height / 2 - 40, 15, 80);
-	// Increasing width and height of the paddles
-// this.leftPaddle = new Paddle(10, this.cvs.height / 2 - 40, 15, 80);
-// this.rightPaddle = new Paddle(this.cvs.width - 25, this.cvs.height / 2 - 40, 15, 80);
+    const nextMatchButton = document.getElementById('nextMatchButton') as HTMLButtonElement;
+    const playAgainButton = document.getElementById('playAgainButton') as HTMLButtonElement;
 
-    // this.ball = new Ball(this.cvs.width / 2, this.cvs.height / 2, 10);
-//   this.ball = new Ball(this.cvs.width / 2, this.cvs.height / 2, 10, "#FFFFFF");
-  
-  this.ball = new Ball(this.cvs.width / 2, this.cvs.height / 2, 15, "#FFFFFF");
-
-    this.initializeControls();
-    new PongControls(this);
-  }
-
-  initializeControls() {
-    document.addEventListener("keydown", (e) => {
-      if (["ArrowUp", "ArrowDown", "KeyW", "KeyS"].includes(e.code)) {
-        e.preventDefault();
-        this.keys[e.code] = true;
-      }
-    });
-
-    document.addEventListener("keyup", (e) => {
-      if (["ArrowUp", "ArrowDown", "KeyW", "KeyS"].includes(e.code)) {
-        e.preventDefault();
-        this.keys[e.code] = false;
-      }
-    });
-  }
-
-  startGame() {
-    if (this.isGameRunning) return;
-
-    this.isGameRunning = true;
-    this.isPaused = false;
-
-    const gameLoop = () => {
-      if (!this.isPaused) {
-        this.update();
-        this.draw();
-      }
-      if (this.isGameRunning) {
-        requestAnimationFrame(gameLoop);
-      }
-    };
-    gameLoop();
-  }
-
-  togglePause(isPaused?: boolean) {
-    this.isPaused = isPaused !== undefined ? isPaused : !this.isPaused;
-  }
-
-  stopGame() {
-    this.isPaused = true;
-    this.isGameRunning = false;
-    this.resetGame();
-    this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
-    this.draw();
-  }
-
-  update() {
-    if (this.keys["KeyW"]) this.leftPaddle.move(-5, this.cvs.height);
-    if (this.keys["KeyS"]) this.leftPaddle.move(5, this.cvs.height);
-    if (this.keys["ArrowUp"]) this.rightPaddle.move(-5, this.cvs.height);
-    if (this.keys["ArrowDown"]) this.rightPaddle.move(5, this.cvs.height);
-
-    this.ball.update(this.cvs, this.leftPaddle, this.rightPaddle);
-
-    if (this.ball.x < 0) {
-      this.rightScore++;
-      this.resetGame();
-    } else if (this.ball.x > this.cvs.width) {
-      this.leftScore++;
-      this.resetGame();
-    }
-  }
-
-  cleanUp() {
-  if (this.intervalId !== undefined) {
-    clearInterval(this.intervalId);
-  }
-  this.keys = {};
-  this.isPaused = true;
-  this.isGameRunning = false;
-}
-
-  resetGame() {
-    this.ball.reset(this.cvs.width / 2, this.cvs.height / 2);
-    // this.leftPaddle.y = this.cvs.height / 2 - 30;
-    // this.rightPaddle.y = this.cvs.height / 2 - 30;
-    document.getElementById("leftScore")!.textContent = this.leftScore.toString();
-    document.getElementById("rightScore")!.textContent = this.rightScore.toString();
-  }
-
-  draw() {
-    this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
-    this.leftPaddle.draw(this.ctx);
-    this.rightPaddle.draw(this.ctx);
-    this.ball.draw(this.ctx);
-  }
-}
-
-class Paddle {
-//   constructor(public x: number, public y: number, public width: number, public height: number) {}
- constructor(
-    public x: number,
-    public y: number,
-    public width: number = 15, // Increased width
-    public height: number = 80 // Increased height
-  ) {}
-
-  move(dy: number, maxHeight: number) {
-     this.y = Math.max(Math.min(this.y + dy, maxHeight - this.height), 0);
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-  }
-}
-
-
-class Ball {
-  dx: number = 0;
-  dy: number = 0;
-  private maxSpeed: number = 7;
-  private paddleBounceOffset: number = 2;
-  color: string; // <-- Add this line
-
-//   constructor(public x: number, public y: number, public size: number, color: string = "#FFFFFF") {
-//     this.color = color; // <-- Set the color
-//     this.reset(x, y);
-//   }
- constructor(
-    public x: number,
-    public y: number,
-    public size: number = 15, // Increased size
-    color: string = "#FFFFFF"
-  ) {
-    this.color = color;
-    this.reset(x, y);
-  }
-  
-  update(cvs: HTMLCanvasElement, leftPaddle: Paddle, rightPaddle: Paddle) {
-    this.x += this.dx;
-    this.y += this.dy;
-
-    // Bounce off the top and bottom walls
-    if (this.y < 0 || this.y + this.size > cvs.height) {
-      this.dy *= -1;
-    }
-
-    // Collision with paddles
-    if (this.collidesWith(leftPaddle)) {
-      this.handlePaddleCollision(leftPaddle, true);
-    } else if (this.collidesWith(rightPaddle)) {
-      this.handlePaddleCollision(rightPaddle, false);
-    }
-  }
-
-  collidesWith(paddle: Paddle): boolean {
-    return (
-      this.x < paddle.x + paddle.width &&
-      this.x + this.size > paddle.x &&
-      this.y < paddle.y + paddle.height &&
-      this.y + this.size > paddle.y
-    );
-  }
-
-  handlePaddleCollision(paddle: Paddle, isLeftPaddle: boolean) {
-    // Invert the X direction
-    this.dx *= -1.1;
-
-    // Push the ball out of the paddle surface to prevent sticking
-    if (isLeftPaddle) {
-      this.x = paddle.x + paddle.width + this.paddleBounceOffset;
+    // Attach listeners safely
+    if (closeTournamentButton) {
+      closeTournamentButton.addEventListener('click', () => {
+        console.log("Closing Tournament Modal");
+        this.pongGame.tournament?.closeTournamentModal();
+        document.getElementById('tournamentModal')?.classList.add('hidden');
+      });
     } else {
-      this.x = paddle.x - this.size - this.paddleBounceOffset;
+      console.warn("closeTournamentButton not found in the DOM.");
     }
 
-    // Introduce randomness to the angle
-    const angleAdjustment = Math.random() * 0.4 - 0.2;
-    this.dy += angleAdjustment;
+   if (closeMatchEndButton) {
+  closeMatchEndButton.addEventListener('click', () => {
+    console.log("Closing Match End Modal");
+    this.pongGame.tournament?.closeMatchEndModal();
+    document.getElementById('tournamentMatchEndModal')?.classList.add('hidden');
+  });
+} else {
+  console.warn("Close button not found inside Match End Modal.");
+}
 
-    // Cap the speed to avoid unplayability
-    this.dx = Math.max(-this.maxSpeed, Math.min(this.maxSpeed, this.dx));
-    this.dy = Math.max(-this.maxSpeed, Math.min(this.maxSpeed, this.dy));
-  }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.size, this.size);
-  }
+    if (nextMatchButton) {
+      nextMatchButton.addEventListener('click', () => {
+        console.log("Starting next tournament match");
+        this.pongGame.initTournamentMatch();
+        document.getElementById('endgameModal')?.classList.add('hidden');
+      });
+    } else {
+      console.warn("nextMatchButton not found in the DOM.");
+    }
 
-  reset(x: number, y: number) {
-    this.x = x;
-    this.y = y;
+    if (playAgainButton) {
+      playAgainButton.addEventListener('click', () => {
+        console.log("Restarting the game");
+        this.pongGame.resetGame();
+        document.getElementById('endgameModal')?.classList.add('hidden');
+      });
+    } else {
+      console.warn("playAgainButton not found in the DOM.");
+    }
 
-    // Randomize initial direction
-    this.dx = Math.random() > 0.5 ? 4 : -4;
-    this.dy = Math.random() > 0.5 ? 3 : -3;
-  }
+  }, 200); // Delay to make sure buttons are in the DOM
+}
+
+
+
+
+
+
+stopJS(){
+		this.pongGame.stopGameLoop();
+	}
+
 }

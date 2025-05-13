@@ -179,6 +179,13 @@ const router = async (): Promise<void> => {
         hideModals();
     }
 
+    // ➡️ Clear Canvas if Pong is loaded
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx?.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
     // ✅ Instantiate the new view
     view = new match.view();
 
@@ -197,6 +204,41 @@ const router = async (): Promise<void> => {
         refreshTailwind();
     }
 };
+
+// const router = async (): Promise<void> => {
+//     let match = routes.find(route => route.path === location.pathname);
+
+//     // ✅ 404 Fallback
+//     if (!match) {
+//         console.warn(`Route not found: ${location.pathname}`);
+//         match = { path: "/404", view: NotFound };
+//     }
+
+//     // ✅ Cleanup existing view if it exists
+//     if (view) {
+//         view.cleanUpEventListeners();
+//         view.stopJS();
+//         hideModals();
+//     }
+
+//     // ✅ Instantiate the new view
+//     view = new match.view();
+
+//     // ✅ Find the #app container and inject HTML
+//     const appDiv = document.querySelector("#app");
+//     if (appDiv) {
+//         appDiv.innerHTML = await view.getHtml();
+
+//         // ✅ Load scripts and event listeners
+//         view.loadJS();
+//         attachEventListenersToLinks();
+//         updateTexts();
+//         animateLetters();
+
+//         // ✅ Refresh Tailwind
+//         refreshTailwind();
+//     }
+// };
 
 //
 // ============================== NAVIGATION FUNCTION ==============================
