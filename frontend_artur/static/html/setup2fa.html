@@ -1,0 +1,37 @@
+<!-- static/html/setup2fa.html -->
+<div class="full-height d-flex flex-column align-items-center justify-content-center">
+  <form class="container glass container-login p-5">
+    <div class="row justify-content-center mb-2">
+      <div class="col-12 text-center">
+        <p class="text-white h1" animated-letters data-translate="setup-2fa">setup 2FA</p>
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+      <div class="col-12 text-center">
+        <button class="btn btn-lg text-light btn-filled" id="generate-qr-button" data-translate="generate-qr">generate QR</button>
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+      <div class="col-12 text-center">
+        <img id="qr-code" style="max-width: 200px; display:none;" alt="QR Code">
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+      <div class="col-12 text-center">
+        <input type="text" id="code-input" maxlength="6" class="form-control text-center" placeholder="Enter 6-digit code">
+      </div>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+      <div class="col-12 text-center">
+        <button class="btn btn-lg text-light btn-filled" id="enable-2fa-button" data-translate="enable">enable 2FA</button>
+        <p id="enable-result" class="text-white mt-3"></p>
+      </div>
+    </div>
+  </form>
+</div>
+
+  

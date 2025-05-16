@@ -1,6 +1,6 @@
 const speakeasy = require('speakeasy');
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET; // || 'your_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports = async function (fastify, opts) {
   fastify.post('/api/enable-2fa', {

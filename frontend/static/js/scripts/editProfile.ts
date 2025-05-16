@@ -1,17 +1,15 @@
 // import { updateTextForElem } from "../utils/languages.js";
-// import { navigateTo } from '../index.js';
-// import { BASE_URL } from '../index.js';
+// //@ts-ignore
+// import { navigateTo, BASE_URL } from '../index.js';
 // import { isUserConnected } from "../utils/utils.js";
 // import { validateUsername, validateEmail, validatePassword } from "../utils/validateInput.js";
 
-// // Function that will be called when the view is loaded
-// export async function editProfile () {
+// export async function editProfile(): Promise<void> {
 // 	if (!(await isUserConnected())) {
 // 		navigateTo('/signin');
 // 		return;
 // 	}
-	
-// 	// State of all forms
+
 // 	const changes = {
 // 		profilePicture: false,
 // 		username: false,
@@ -19,49 +17,41 @@
 // 		password: false
 // 	};
 
-//     // Get the form elements from the HTML
-// 	const avatarElem = document.getElementById('avatar');
-// 	const avatarInputElem = document.getElementById('avatar-input');
-// 	const usernameElem = document.getElementById('username');
-// 	const emailElem = document.getElementById('email');
-// 	const passwordElem = document.getElementById('password');
-	
-// 	const usernameErrorElem = document.getElementById('username-error');
-// 	const emailErrorElem = document.getElementById('email-error');
-// 	const passwordErrorElem = document.getElementById('password-error');
-// 	const avatarErrorElem = document.getElementById('avatar-error');
-	
-// 	// Add event listeners for when the user leaves the input fields
+// 	const avatarElem = document.getElementById('avatar') as HTMLImageElement;
+// 	const avatarInputElem = document.getElementById('avatar-input') as HTMLInputElement;
+// 	const usernameElem = document.getElementById('username') as HTMLInputElement;
+// 	const emailElem = document.getElementById('email') as HTMLInputElement;
+// 	const passwordElem = document.getElementById('password') as HTMLInputElement;
+
+// 	const usernameErrorElem = document.getElementById('username-error')!;
+// 	const emailErrorElem = document.getElementById('email-error')!;
+// 	const passwordErrorElem = document.getElementById('password-error')!;
+// 	const avatarErrorElem = document.getElementById('avatar-error')!;
+
 // 	usernameElem.addEventListener('blur', () => validateUsername(usernameElem, usernameErrorElem));
 // 	emailElem.addEventListener('blur', () => validateEmail(emailElem, emailErrorElem));
 // 	passwordElem.addEventListener('blur', () => validatePassword(passwordElem, passwordErrorElem));
 
 // 	avatarInputElem.addEventListener('change', () => {
 // 		changes.profilePicture = true;
-// 		// change the image if its valid
 // 		if (validateAvatar()) {
-// 			const avatar = avatarInputElem.files[0];
-// 			const url = URL.createObjectURL(avatar);
-// 			avatarElem.src = url;
+// 			const avatar = avatarInputElem.files?.[0];
+// 			if (avatar) {
+// 				const url = URL.createObjectURL(avatar);
+// 				avatarElem.src = url;
+// 			}
 // 		}
 // 	});
-// 	usernameElem.addEventListener('change', () => {
-// 		changes.username = true;
-// 	});
-// 	emailElem.addEventListener('change', () => {
-// 		changes.email = true;
-// 	});
-// 	passwordElem.addEventListener('change', () => {
-// 		changes.password = true;
-// 	});
-	
-// 	// Add event listener for the submit button
-// 	const saveButtonElem = document.getElementById('save-button');
+
+// 	usernameElem.addEventListener('change', () => changes.username = true);
+// 	emailElem.addEventListener('change', () => changes.email = true);
+// 	passwordElem.addEventListener('change', () => changes.password = true);
+
+// 	const saveButtonElem = document.getElementById('save-button')!;
 // 	saveButtonElem.addEventListener('click', submitForm);
 
-// 	// Get the user's avatar
+// 	// Fetch avatar
 // 	const responseAvatar = await fetch(`${BASE_URL}/api/user_avatar`);
-
 // 	if (responseAvatar.status !== 200) {
 // 		avatarElem.src = 'static/assets/images/profile_pic_transparent.png';
 // 	} else {
@@ -70,30 +60,26 @@
 // 		avatarElem.src = url;
 // 	}
 
-// 	// Get the user's data
+// 	// Fetch profile
 // 	const response = await fetch(`${BASE_URL}/api/profile`);
-
 // 	if (response.status === 200) {
 // 		const responseData = await response.json();
 // 		const user = responseData.user;
-
 // 		usernameElem.value = user.username;
 // 		emailElem.value = user.email;
 // 	}
 
-// 	// Validates profile picture
-// 	function validateAvatar() {
-// 		const avatar = avatarInputElem.files[0];
-// 		const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+// 	function validateAvatar(): boolean {
+// 		const avatar = avatarInputElem.files?.[0];
+// 		const allowedExtensions = /\.(jpg|jpeg|png)$/i;
 // 		if (!avatar) {
 // 			updateTextForElem(avatarErrorElem, 'avatar-empty-error');
 // 			return false;
 // 		}
-// 		if (!allowedExtensions.exec(avatar.name)) {
+// 		if (!allowedExtensions.test(avatar.name)) {
 // 			updateTextForElem(avatarErrorElem, 'avatar-invalid-error');
 // 			return false;
 // 		}
-// 		// check if the file is less than 2MB
 // 		if (avatar.size > 1024 * 1024) {
 // 			updateTextForElem(avatarErrorElem, 'avatar-size-error');
 // 			return false;
@@ -102,256 +88,233 @@
 // 		return true;
 // 	}
 
-// 	async function submitForm(e) {
-// 		// Prevent the default behavior of the form
+// 	async function submitForm(e: Event) {
 // 		e.preventDefault();
+// 		const hasChanges = Object.values(changes).some(Boolean);
+// 		if (!hasChanges) return;
 
-// 		// Check if at least one input has changed
-// 		let changesAvailable = false;
-
-// 		for (let value of Object.values(changes)) {
-// 			if (value === true) {
-// 				changesAvailable = true;
-// 				break;
-// 			}
-// 		}
-
-// 		if (!changesAvailable) {
-// 			return;
-// 		}
-
-// 		// Data to be sent to the server
 // 		const formData = new FormData();
-
-// 		// Validate only the fields that have been changed
 // 		let formValid = true;
-// 		if (changes.profilePicture) {
-// 			if (!validateAvatar()) {
-// 				formValid = false;
-// 			}
+
+// 		if (changes.profilePicture && avatarInputElem.files?.[0]) {
+// 			if (!validateAvatar()) formValid = false;
 // 			formData.append('profile_picture', avatarInputElem.files[0]);
 // 		}
 // 		if (changes.username) {
-// 			if (!validateUsername(usernameElem, usernameErrorElem)) {
-// 				formValid = false;
-// 			}
+// 			if (!validateUsername(usernameElem, usernameErrorElem)) formValid = false;
 // 			formData.append('username', usernameElem.value);
 // 		}
 // 		if (changes.email) {
-// 			if (!validateEmail(emailElem, emailErrorElem)) {
-// 				formValid = false;
-// 			}
+// 			if (!validateEmail(emailElem, emailErrorElem)) formValid = false;
 // 			formData.append('email', emailElem.value);
 // 		}
 // 		if (changes.password) {
-// 			if (!validatePassword(passwordElem, passwordErrorElem)) {
-// 				formValid = false;
-// 			}
+// 			if (!validatePassword(passwordElem, passwordErrorElem)) formValid = false;
 // 			formData.append('password', passwordElem.value);
 // 		}
 
-// 		if (formValid) {
-// 			// Send the data to the server
-// 			const response = await fetch(`${BASE_URL}/api/update_user`, {
-// 				method: 'PUT',
-// 				body: formData
-// 			})
+// 		if (!formValid) return;
 
-// 			// If the status is an error, show the error message in the correct fields
-// 			if (response.status === 400) {
-// 				// Get the response data into json
-// 				const responseData = await response.json();
+// 		const res = await fetch(`${BASE_URL}/api/update_user`, {
+// 			method: 'PUT',
+// 			body: formData
+// 		});
 
-// 				if (responseData.username) {
-// 					updateTextForElem(document.getElementById('username-error'), responseData.username[0]);
-// 				}
-// 				if (responseData.email) {
-// 					updateTextForElem(document.getElementById('email-error'), responseData.email[0]);
-// 				}
-// 				if (responseData.password) {
-// 					updateTextForElem(document.getElementById('password-error'), responseData.password[0]);
-// 				}
-// 			} else if (response.status === 200) {
-// 				// If the response status is success, show success message and navigate to the login page
-// 				const containerEdit = document.querySelector('.container-edit');
-// 				containerEdit.innerHTML = `
-// 					<div class="success text-center">
-// 						<h1 id="success-message" class="text-white" data-translate"save-success">Sign up successful!</h1>
-// 						<div class="d-flex align-items-center justify-content-center p-5">
-// 							<svg class='loading-icon' xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="24" width="24" id="Timer-Zero--Streamline-Sharp">
-// 								<desc>Timer Zero Streamline Icon: https://streamlinehq.com</desc>
-// 								<g id="timer-zero--whole-midnight-hour-clock-time">
-// 									<path id="Union" fill="#FFFFFF" fillRule="evenodd" d="M10.75 5V1h2.5v4h-2.5Zm-7.134 0.384 2.5 2.5 1.768 -1.768 -2.5 -2.5 -1.768 1.768Zm14.268 2.5 2.5 -2.5 -1.768 -1.768 -2.5 2.5 1.768 1.768Zm0 8.232 2.5 2.5 -1.768 1.768 -2.5 -2.5 1.768 -1.768Zm-11.768 0 -2.5 2.5 1.768 1.768 2.5 -2.5 -1.768 -1.768ZM10.75 19v4h2.5v-4h-2.5ZM5 13.25H1v-2.5h4v2.5Zm14 0h4v-2.5h-4v2.5Z" clipRule="evenodd" strokeWidth="1"></path>
-// 								</g>
-// 							</svg>
-// 						</div>
+// 		if (res.status === 400) {
+// 			const responseData = await res.json();
+// 			if (responseData.username) updateTextForElem(usernameErrorElem, responseData.username[0]);
+// 			if (responseData.email) updateTextForElem(emailErrorElem, responseData.email[0]);
+// 			if (responseData.password) updateTextForElem(passwordErrorElem, responseData.password[0]);
+// 		} else if (res.status === 200) {
+// 			const container = document.querySelector('.container-edit')!;
+// 			container.innerHTML = `
+// 				<div class="success text-center">
+// 					<h1 id="success-message" class="text-white" data-translate="save-success">Sign up successful!</h1>
+// 					<div class="d-flex align-items-center justify-content-center p-5">
+// 						<svg class='loading-icon' xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="24" width="24">
+// 							<g><path fill="#FFFFFF" fill-rule="evenodd" d="M10.75 5V1h2.5v4h-2.5Z..."/></g>
+// 						</svg>
 // 					</div>
-// 				`;
-// 				updateTextForElem(document.getElementById('success-message'), 'save-success');
-// 				setTimeout(() => {
-// 					navigateTo('/profile');
-// 				}, 1000);
-// 			} else {
-// 				const containerLogin = document.querySelector('.container-edit');
-// 				containerLogin.innerHTML = `
-// 					<div class="error text-center">
-// 						<h1 id="failure-message" class="text-white">An error occured in the server</h1>
-// 						<p class="text-white"></p>
-// 					</div>
-// 				`;
-// 				updateTextForElem(document.getElementById('failure-message'), 'save-failure');
-// 			}
+// 				</div>`;
+// 			updateTextForElem(document.getElementById('success-message')!, 'save-success');
+// 			setTimeout(() => navigateTo('/profile'), 1000);
+// 		} else {
+// 			const container = document.querySelector('.container-edit')!;
+// 			container.innerHTML = `
+// 				<div class="error text-center">
+// 					<h1 id="failure-message" class="text-white">An error occurred in the server</h1>
+// 				</div>`;
+// 			updateTextForElem(document.getElementById('failure-message')!, 'save-failure');
 // 		}
-// 	};
+// 	}
 // }
-
 import { updateTextForElem } from "../utils/languages.js";
-//@ts-ignore
-import { navigateTo, BASE_URL } from '../index.js';
+import { navigateTo } from '../index.js';
+import { BASE_URL } from '../index.js';
 import { isUserConnected } from "../utils/utils.js";
 import { validateUsername, validateEmail, validatePassword } from "../utils/validateInput.js";
+import { authFetch } from "../utils/authFetch.js";
+
+type ProfileChanges = {
+  profilePicture: boolean;
+  username: boolean;
+  email: boolean;
+  password: boolean;
+};
 
 export async function editProfile(): Promise<void> {
-	if (!(await isUserConnected())) {
-		navigateTo('/signin');
-		return;
-	}
+  if (!(await isUserConnected())) {
+    navigateTo('/signin');
+    return;
+  }
 
-	const changes = {
-		profilePicture: false,
-		username: false,
-		email: false,
-		password: false
-	};
+  const changes: ProfileChanges = {
+    profilePicture: false,
+    username: false,
+    email: false,
+    password: false
+  };
 
-	const avatarElem = document.getElementById('avatar') as HTMLImageElement;
-	const avatarInputElem = document.getElementById('avatar-input') as HTMLInputElement;
-	const usernameElem = document.getElementById('username') as HTMLInputElement;
-	const emailElem = document.getElementById('email') as HTMLInputElement;
-	const passwordElem = document.getElementById('password') as HTMLInputElement;
+  // DOM elements with null checks
+  const avatarElem = document.getElementById('avatar') as HTMLImageElement;
+  const avatarInputElem = document.getElementById('avatar-input') as HTMLInputElement;
+  const usernameElem = document.getElementById('username') as HTMLInputElement;
+  const emailElem = document.getElementById('email') as HTMLInputElement;
+  const passwordElem = document.getElementById('password') as HTMLInputElement;
 
-	const usernameErrorElem = document.getElementById('username-error')!;
-	const emailErrorElem = document.getElementById('email-error')!;
-	const passwordErrorElem = document.getElementById('password-error')!;
-	const avatarErrorElem = document.getElementById('avatar-error')!;
+  const usernameErrorElem = document.getElementById('username-error') as HTMLElement;
+  const emailErrorElem = document.getElementById('email-error') as HTMLElement;
+  const passwordErrorElem = document.getElementById('password-error') as HTMLElement;
+  const avatarErrorElem = document.getElementById('avatar-error') as HTMLElement;
+  const saveButtonElem = document.getElementById('save-button') as HTMLButtonElement;
 
-	usernameElem.addEventListener('blur', () => validateUsername(usernameElem, usernameErrorElem));
-	emailElem.addEventListener('blur', () => validateEmail(emailElem, emailErrorElem));
-	passwordElem.addEventListener('blur', () => validatePassword(passwordElem, passwordErrorElem));
+  // ⚠️ Added strict null checks:
+  if (!avatarElem || !avatarInputElem || !usernameElem || !emailElem || !passwordElem ||
+      !usernameErrorElem || !emailErrorElem || !passwordErrorElem || !avatarErrorElem || !saveButtonElem) {
+    console.error("One or more required DOM elements not found.");
+    return;
+  }
 
-	avatarInputElem.addEventListener('change', () => {
-		changes.profilePicture = true;
-		if (validateAvatar()) {
-			const avatar = avatarInputElem.files?.[0];
-			if (avatar) {
-				const url = URL.createObjectURL(avatar);
-				avatarElem.src = url;
-			}
-		}
-	});
+  // Event listeners
+  usernameElem.addEventListener('blur', () => validateUsername(usernameElem, usernameErrorElem));
+  emailElem.addEventListener('blur', () => validateEmail(emailElem, emailErrorElem));
+  passwordElem.addEventListener('blur', () => validatePassword(passwordElem, passwordErrorElem));
 
-	usernameElem.addEventListener('change', () => changes.username = true);
-	emailElem.addEventListener('change', () => changes.email = true);
-	passwordElem.addEventListener('change', () => changes.password = true);
+  avatarInputElem.addEventListener('change', () => {
+    changes.profilePicture = true;
+    if (validateAvatar()) {
+      const avatar = avatarInputElem.files?.[0];
+      if (avatar) {
+        const url = URL.createObjectURL(avatar);
+        avatarElem.src = url;
+      }
+    }
+  });
 
-	const saveButtonElem = document.getElementById('save-button')!;
-	saveButtonElem.addEventListener('click', submitForm);
+  usernameElem.addEventListener('change', () => (changes.username = true));
+  emailElem.addEventListener('change', () => (changes.email = true));
+  passwordElem.addEventListener('change', () => (changes.password = true));
 
-	// Fetch avatar
-	const responseAvatar = await fetch(`${BASE_URL}/api/user_avatar`);
-	if (responseAvatar.status !== 200) {
-		avatarElem.src = 'static/assets/images/profile_pic_transparent.png';
-	} else {
-		const blob = await responseAvatar.blob();
-		const url = URL.createObjectURL(blob);
-		avatarElem.src = url;
-	}
+  saveButtonElem.addEventListener('click', submitForm);
 
-	// Fetch profile
-	const response = await fetch(`${BASE_URL}/api/profile`);
-	if (response.status === 200) {
-		const responseData = await response.json();
-		const user = responseData.user;
-		usernameElem.value = user.username;
-		emailElem.value = user.email;
-	}
+  // Fetch current avatar
+  const responseAvatar = await authFetch(`${BASE_URL}/api/user_avatar`);
+  if (responseAvatar.status !== 200) {
+    avatarElem.src = 'static/assets/images/profile_pic_transparent.png';
+  } else {
+    const blob = await responseAvatar.blob();
+    const url = URL.createObjectURL(blob);
+    avatarElem.src = url;
+  }
 
-	function validateAvatar(): boolean {
-		const avatar = avatarInputElem.files?.[0];
-		const allowedExtensions = /\.(jpg|jpeg|png)$/i;
-		if (!avatar) {
-			updateTextForElem(avatarErrorElem, 'avatar-empty-error');
-			return false;
-		}
-		if (!allowedExtensions.test(avatar.name)) {
-			updateTextForElem(avatarErrorElem, 'avatar-invalid-error');
-			return false;
-		}
-		if (avatar.size > 1024 * 1024) {
-			updateTextForElem(avatarErrorElem, 'avatar-size-error');
-			return false;
-		}
-		avatarErrorElem.textContent = '\u00A0';
-		return true;
-	}
+  // Fetch current profile info
+  const response = await authFetch(`${BASE_URL}/api/profile`);
+  if (response.status === 200) {
+    const responseData = await response.json();
+    const user = responseData.user;
+    usernameElem.value = user.username;
+    emailElem.value = user.email;
+  }
 
-	async function submitForm(e: Event) {
-		e.preventDefault();
-		const hasChanges = Object.values(changes).some(Boolean);
-		if (!hasChanges) return;
+  // Validation function
+  function validateAvatar(): boolean {
+    const avatar = avatarInputElem.files?.[0];
+    const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
 
-		const formData = new FormData();
-		let formValid = true;
+    if (!avatar) {
+      updateTextForElem(avatarErrorElem!, 'avatar-empty-error');
+      return false;
+    }
+    if (!allowedExtensions.exec(avatar.name)) {
+      updateTextForElem(avatarErrorElem!, 'avatar-invalid-error');
+      return false;
+    }
+    if (avatar.size > 1024 * 1024) {
+      updateTextForElem(avatarErrorElem!, 'avatar-size-error');
+      return false;
+    }
+    avatarErrorElem!.textContent = '\u00A0';
+    return true;
+  }
 
-		if (changes.profilePicture && avatarInputElem.files?.[0]) {
-			if (!validateAvatar()) formValid = false;
-			formData.append('profile_picture', avatarInputElem.files[0]);
-		}
-		if (changes.username) {
-			if (!validateUsername(usernameElem, usernameErrorElem)) formValid = false;
-			formData.append('username', usernameElem.value);
-		}
-		if (changes.email) {
-			if (!validateEmail(emailElem, emailErrorElem)) formValid = false;
-			formData.append('email', emailElem.value);
-		}
-		if (changes.password) {
-			if (!validatePassword(passwordElem, passwordErrorElem)) formValid = false;
-			formData.append('password', passwordElem.value);
-		}
+  // Form submission
+  async function submitForm(e: Event): Promise<void> {
+    e.preventDefault();
 
-		if (!formValid) return;
+    const hasChanges = Object.values(changes).some(v => v === true);
+    if (!hasChanges) return;
 
-		const res = await fetch(`${BASE_URL}/api/update_user`, {
-			method: 'PUT',
-			body: formData
-		});
+    const formData = new FormData();
+    let formValid = true;
 
-		if (res.status === 400) {
-			const responseData = await res.json();
-			if (responseData.username) updateTextForElem(usernameErrorElem, responseData.username[0]);
-			if (responseData.email) updateTextForElem(emailErrorElem, responseData.email[0]);
-			if (responseData.password) updateTextForElem(passwordErrorElem, responseData.password[0]);
-		} else if (res.status === 200) {
-			const container = document.querySelector('.container-edit')!;
-			container.innerHTML = `
-				<div class="success text-center">
-					<h1 id="success-message" class="text-white" data-translate="save-success">Sign up successful!</h1>
-					<div class="d-flex align-items-center justify-content-center p-5">
-						<svg class='loading-icon' xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" height="24" width="24">
-							<g><path fill="#FFFFFF" fill-rule="evenodd" d="M10.75 5V1h2.5v4h-2.5Z..."/></g>
-						</svg>
-					</div>
-				</div>`;
-			updateTextForElem(document.getElementById('success-message')!, 'save-success');
-			setTimeout(() => navigateTo('/profile'), 1000);
-		} else {
-			const container = document.querySelector('.container-edit')!;
-			container.innerHTML = `
-				<div class="error text-center">
-					<h1 id="failure-message" class="text-white">An error occurred in the server</h1>
-				</div>`;
-			updateTextForElem(document.getElementById('failure-message')!, 'save-failure');
-		}
-	}
+    if (changes.profilePicture && validateAvatar()) {
+      const avatarFile = avatarInputElem.files?.[0];
+      if (avatarFile) {
+        formData.append('profile_picture', avatarFile);
+      }
+    } else if (changes.profilePicture) {
+      formValid = false;
+    }
+
+    if (changes.username && validateUsername(usernameElem, usernameErrorElem)) {
+      formData.append('username', usernameElem.value);
+    } else if (changes.username) {
+      formValid = false;
+    }
+
+    if (changes.email && validateEmail(emailElem, emailErrorElem)) {
+      formData.append('email', emailElem.value);
+    } else if (changes.email) {
+      formValid = false;
+    }
+
+    if (changes.password && validatePassword(passwordElem, passwordErrorElem)) {
+      formData.append('password', passwordElem.value);
+    } else if (changes.password) {
+      formValid = false;
+    }
+
+    if (!formValid) return;
+
+    const response = await authFetch(`${BASE_URL}/api/update_user`, {
+      method: 'PUT',
+      body: formData
+    });
+
+    const containerEdit = document.querySelector('.container-edit') as HTMLElement | null;
+
+    if (response.status === 400) {
+      const responseData = await response.json();
+      if (responseData.username) updateTextForElem(usernameErrorElem!, responseData.username[0]);
+      if (responseData.email) updateTextForElem(emailErrorElem!, responseData.email[0]);
+      if (responseData.password) updateTextForElem(passwordErrorElem!, responseData.password[0]);
+    } else if (response.status === 200 && containerEdit) {
+      containerEdit.innerHTML = `<div class="success text-center">...loading icon...</div>`;
+      setTimeout(() => navigateTo('/profile'), 1000);
+    } else if (containerEdit) {
+      containerEdit.innerHTML = `<div class="error text-center"><h1 id="failure-message">An error occurred in the server</h1></div>`;
+      updateTextForElem(document.getElementById('failure-message')!, 'save-failure');
+    }
+  }
 }
+

@@ -19,7 +19,9 @@ RUN npx tsc --project tsconfig.json
 RUN npx tailwindcss -i ./static/css/input.css -o ./static/css/output.css --minify
 
 # Expose frontend dev port
-EXPOSE 6060
+EXPOSE 6060 
+# 6565
 
 # Serve static files from root directory
 CMD ["http-server", ".", "-p", "6060", "-s", "-d"]
+#6565

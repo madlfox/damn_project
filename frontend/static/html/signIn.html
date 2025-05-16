@@ -1,4 +1,4 @@
-<div class="full-height d-flex flex-column align-items-center justify-content-center">
+<!-- <div class="full-height d-flex flex-column align-items-center justify-content-center">
 	<form class="container glass container-login p-5">
 		<div class="row justify-content-center mb-2">
 			<div class="col-12 text-center">
@@ -39,4 +39,45 @@
 	<a role="button" class="return-btn btn btn-lg text-light text-center d-flex align-items-center justify-content-center p-3 mt-5" href="/" data-link>
 		<img src="static/assets/UI/icons/left_arrow.svg" alt="return button" id="left-arrow">
 	</a>
+</div> -->
+<div class="min-h-screen flex flex-col items-center justify-center bg-gray-900">
+    <form class="bg-opacity-60 bg-gray-800 backdrop-blur-md p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div class="mb-4 text-center">
+            <p class="text-white text-2xl font-bold animate-bounce" data-translate="login">Login</p>
+        </div>
+
+        <div class="mb-5 border-b border-white"></div>
+
+        <!-- Username Field -->
+        <div class="mb-5">
+            <label for="username" class="block text-white mb-1" data-translate="username">Username:</label>
+            <input type="text" id="username" class="w-full p-2 bg-gray-700 text-white text-center rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" maxlength="15">
+            <small class="text-red-500" id="username-error">&nbsp;</small>
+        </div>
+
+        <!-- Password Field -->
+        <div class="mb-5">
+            <label for="password" class="block text-white mb-1" data-translate="password">Password:</label>
+            <input type="password" id="password" class="w-full p-2 bg-gray-700 text-white text-center rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" maxlength="64">
+            <small class="text-red-500" id="password-error">&nbsp;</small>
+        </div>
+
+        <!-- Sign In Button -->
+        <div class="mt-6 text-center">
+            <button id="sign-in-button" class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition" data-translate="login">
+                Login
+            </button>
+        </div>
+
+        <!-- Sign Up Link -->
+        <div class="mt-4 text-center text-white">
+            <small class="text-gray-400" data-translate="no account">No account?</small>
+            <a href="/signup" class="text-blue-400 hover:underline ml-1" data-link data-translate="sign up">Sign up</a>
+        </div>
+    </form>
+
+    <!-- Return Button -->
+    <a role="button" href="/" class="mt-8 flex items-center justify-center p-3 rounded-full bg-gray-700 hover:bg-gray-600 transition" data-link>
+        <img src="static/assets/UI/icons/left_arrow.svg" alt="return button" class="w-6 h-6">
+    </a>
 </div>

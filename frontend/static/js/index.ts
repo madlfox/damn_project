@@ -116,7 +116,10 @@ import Games from "./views/Games.js";
 import Friends from "./views/Friends.js";
  import EditProfile from "./views/EditProfile.js";
   import Settings from "./views/Settings.js";
-
+//@ts-ignore
+import Setup2FA from "./views/Setup2FA.js";
+//@ts-ignore
+import Verify2FA from "./views/Verify2FA.js";
 // ------------------------------- IMPORT VISUAL EFFECTS -------------------------------
 import { animateLetters, initLoadTransition, initInteractiveBubble } from './visual/effects.js';
 
@@ -151,7 +154,9 @@ const routes: { path: string, view: new () => View }[] = [
      { path: "/pong-statistics", view: PongStatistics },
      { path: "/friends", view: Friends },
      { path: "/edit-profile", view: EditProfile },
-     { path: "/settings", view: Settings }
+     { path: "/settings", view: Settings },
+     { path: "/setup2fa", view: Setup2FA },
+	{ path: "/verify2fa", view: Verify2FA }
 ];
 
 // ------------------------------- GLOBAL VIEW REFERENCE -------------------------------

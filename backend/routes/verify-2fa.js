@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
-const JWT_SECRET = process.env.JWT_SECRET; // || 'your_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports = async function (fastify, opts) {
   fastify.post('/api/verify-2fa', {
@@ -21,12 +21,10 @@ module.exports = async function (fastify, opts) {
     try {
       const decoded = jwt.verify(temp_token, JWT_SECRET);
 
-      // Must be unverified temp token
       if (decoded.twofa_verified !== false) {
         return reply.code(400).send({ error: ['Invalid or expired token'] });
       }
 
-      // Get user's stored secret
       const user = await new Promise((resolve, reject) => {
         fastify.db.get(
           'SELECT id, username, twofa_secret FROM users WHERE id = ?',
@@ -42,17 +40,28 @@ module.exports = async function (fastify, opts) {
         return reply.code(400).send({ error: ['2FA not set up'] });
       }
 
-      // Verify TOTP code
       const isValid = speakeasy.totp.verify({
         secret: user.twofa_secret,
         encoding: 'base32',
         token: code,
-        window: 1 // allow ±1 step for clock drift
+        window: 1
       });
 
       if (!isValid) {
         return reply.code(400).send({ error: ['Invalid 2FA code'] });
       }
+
+      // ✅ Set user online
+      await new Promise((resolve, reject) => {
+        fastify.db.run(
+          'UPDATE users SET online_status = ? WHERE id = ?',
+          [true, user.id],
+          (err) => {
+            if (err) reject(err);
+            else resolve();
+          }
+        );
+      });
 
       // ✅ Issue final access JWT
       const fullToken = jwt.sign(

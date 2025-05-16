@@ -1,67 +1,118 @@
-
-
 import { navigateTo } from "../index.js";
 import { updateTextForElem } from "../utils/languages.js";
 import { validateUsername } from "../utils/validateInput.js";
 
+
 export function signIn(): void {
-  const usernameElem = document.getElementById("username") as HTMLInputElement;
-  const passwordElem = document.getElementById("password") as HTMLInputElement;
-  const usernameErrorElem = document.getElementById("username-error") as HTMLElement;
-  const passwordErrorElem = document.getElementById("password-error") as HTMLElement;
+    // Get the form elements from the HTML
+    const usernameElem = document.getElementById("username") as HTMLInputElement;
+    const passwordElem = document.getElementById("password") as HTMLInputElement;
+    const usernameErrorElem = document.getElementById("username-error") as HTMLElement;
+    const passwordErrorElem = document.getElementById("password-error") as HTMLElement;
 
-  usernameElem.addEventListener("blur", () => validateUsername(usernameElem, usernameErrorElem));
-  passwordElem.addEventListener("blur", () => validatePassword(passwordElem, passwordErrorElem));
+    // Apply Tailwind classes
+    usernameElem.classList.add('input-field');
+    passwordElem.classList.add('input-field');
+    usernameErrorElem.classList.add('input-error');
+    passwordErrorElem.classList.add('input-error');
 
-  const signInButton = document.querySelector("#sign-in-button") as HTMLButtonElement;
+    const signInButton = document.querySelector("#sign-in-button") as HTMLButtonElement;
+    signInButton.classList.add('button-primary');
+    const containerLogin = document.querySelector('.container-login') as HTMLElement;
 
-  const validatePassword = (pwdElem: HTMLInputElement, pwdErrElem: HTMLElement): boolean => {
-    const password = pwdElem.value.trim();
-    if (password === "") {
-      updateTextForElem(pwdErrElem, "password-empty-error");
-      return false;
-    }
-    pwdErrElem.textContent = "\u00A0"; // non‑breaking space to clear message
-    return true;
-  };
+    /**
+     * Validates the password field
+     */
+    const validatePassword = (passwordElem: HTMLInputElement, passwordErrorElem: HTMLElement): boolean => {
+        const password = passwordElem.value;
+        if (password === '') {
+            updateTextForElem(passwordErrorElem, 'password-empty-error');
+            passwordErrorElem.classList.add('input-error');
+            return false;
+        } else {
+            passwordErrorElem.textContent = '\u00A0'; // Non-breaking space
+            passwordErrorElem.classList.remove('input-error');
+            return true;
+        }
+    };
 
-  signInButton.addEventListener("click", async (e) => {
-    e.preventDefault();
+    /**
+     * Attach blur event listeners for validation
+     */
+    usernameElem.addEventListener("blur", () => validateUsername(usernameElem, usernameErrorElem));
+    passwordElem.addEventListener("blur", () => validatePassword(passwordElem, passwordErrorElem));
 
-    const usernameValid = validateUsername(usernameElem, usernameErrorElem);
-    const passwordValid = validatePassword(passwordElem, passwordErrorElem);
-    if (!usernameValid || !passwordValid) return;
+    /**
+     * Attach event listener for the sign-in button
+     */
+    signInButton.addEventListener("click", async (e: Event) => {
+        e.preventDefault();
 
-    const data = { username: usernameElem.value, password: passwordElem.value };
+        // Validate inputs
+        const usernameValid = validateUsername(usernameElem, usernameErrorElem);
+        const passwordValid = validatePassword(passwordElem, passwordErrorElem);
 
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+        if (!usernameValid || !passwordValid) return;
 
-      if (response.status === 400) {
-        const responseData = await response.json();
-        updateTextForElem(usernameErrorElem, responseData.error[0]);
-        updateTextForElem(passwordErrorElem, responseData.error[0]);
-      } else if (response.status === 200) {
-        navigateTo("/profile");
-      } else {
-        const containerLogin = document.querySelector(".container-login") as HTMLElement;
-        containerLogin.innerHTML = `
-          <div class="error text-center">
-            <h5 id="failure-message" class="text-white">An error occured in the server</h5>
-          </div>`;
-        updateTextForElem(document.getElementById("failure-message")!, "sign-up-failure");
-      }
-    } catch (err) {
-      // Network or unexpected error
-      const containerLogin = document.querySelector(".container-login") as HTMLElement;
-      containerLogin.innerHTML = `
-        <div class="error text-center">
-          <h5 id="failure-message" class="text-white">Network error</h5>
-        </div>`;
-    }
-  });
+        const username = usernameElem.value;
+        const password = passwordElem.value;
+
+        try {
+            // Perform the login request
+            const response = await fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.status === 400) {
+                const responseData = await response.json();
+                updateTextForElem(usernameErrorElem, responseData.error[0]);
+                updateTextForElem(passwordErrorElem, responseData.error[0]);
+                return;
+            }
+
+            if (response.status === 200) {
+                const result = await response.json();
+
+                if (result.twofa_required && result.temp_token) {
+                    // Save the temp_token in sessionStorage or localStorage
+                    sessionStorage.setItem("temp_token", result.temp_token);
+                    navigateTo("/verify2fa");
+                } else if (result.token) {
+                    // Save the final JWT token (can be used in Authorization headers later)
+                    localStorage.setItem("auth_token", result.token);
+                    navigateTo("/setup2fa");
+                } else {
+                    containerLogin.innerHTML = `
+                        <div class="error-message">
+                            <h5 id="failure-message">
+                                Login succeeded, but server response was unexpected
+                            </h5>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            containerLogin.innerHTML = `
+                <div class="error-message">
+                    <h5 id="failure-message">
+                        An error occurred in the server
+                    </h5>
+                </div>
+            `;
+            updateTextForElem(document.getElementById('failure-message') as HTMLElement, 'sign-up-failure');
+
+        } catch (error) {
+            console.error("An error occurred during sign-in:", error);
+            containerLogin.innerHTML = `
+                <div class="error-message">
+                    <h5 id="failure-message">
+                        Unable to connect to the server.
+                    </h5>
+                </div>
+            `;
+        }
+    });
 }
