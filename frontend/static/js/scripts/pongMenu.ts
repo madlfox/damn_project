@@ -7,239 +7,196 @@ import { updateTextForElem } from "../utils/languages.js";
 export let eventListeners: Record<string, EventListener> = {};
 
 
-// templates.js (or wherever you store these)
+
 export const gamestyleModalHTML = `
 	<div class="modal-header">
-		<h2 class="modal-title text-white w-100 text-center" data-translate="gamestyle"></h2>
+		<h2 class="text-white text-2xl text-center w-full" data-translate="gamestyle"></h2>
 	</div>
 	<div class="modal-body">
-		<div class="row justify-content-center">
-			<div class="col-4 d-flex justify-content-center">
-				<button role="button" class="btn btn-lg text-white btn-filled" id="btnLegacy" data-translate="legacy"></button>
-			</div>
-			<div class="col-4 d-flex justify-content-center">
-				<button role="button" class="btn btn-lg text-white btn-filled" id="btnEnhanced" data-translate="enhanced"></button>
-			</div>
-			<div class="col-4 d-flex justify-content-center">
-				<button role="button" class="btn btn-lg text-white btn-filled" id="btn3D" data-translate="3D"></button>
-			</div>
-			<div class="col-12 d-flex justify-content-center mb-2 mt-4">
-				<div class="col-10 justify-content-center d-flex flex-column" id="AIDifficulties">
-					<p class="text-white text-center" id="gamestyleDescription"></p>
-					<p class="text-white text-center" id="availableGamemodes"></p>
-				</div>
-			</div>
+		<div class="flex justify-center gap-4 mt-4">
+			<button class="btn text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md" id="btnLegacy" data-translate="legacy">Legacy</button>
+			<button class="btn text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md" id="btnEnhanced" data-translate="enhanced">Enhanced</button>
+			<button class="btn text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md" id="btn3D" data-translate="3D">3D</button>
+		</div>
+		<div class="flex flex-col items-center mt-6">
+			<p class="text-white text-center" id="gamestyleDescription"></p>
+			<p class="text-white text-center" id="availableGamemodes"></p>
 		</div>
 	</div>
 `;
 
 
-// templates.js (or any shared file)
 export const gamemodeModalHTML = `
 	<div class="modal-header">
-		<h2 class="modal-title text-white w-100 text-center" data-translate="gamemode"></h2>
+		<h2 class="text-white text-2xl text-center w-full" data-translate="gamemode"></h2>
 	</div>
 	<div class="modal-body">
-		<div class="row justify-content-center">
-			<div class="col-4 d-flex justify-content-center">
-				<button role="button" class="btn btn-lg text-white btn-filled" id="btnPvp" data-translate="pvp"></button>
-			</div>
-			<div class="col-4 d-flex justify-content-center">
-				<button role="button" class="btn btn-lg text-white btn-filled" id="btnAI" data-translate="vs ai"></button>
-			</div>
-			<div class="col-4 d-flex justify-content-center">
-				<button role="button" class="btn btn-lg text-white btn-filled" id="btnTournament" data-translate="tournament"></button>
-			</div>
-			<div class="col-12 d-flex justify-content-center mt-3">
-				<div class="col-8 justify-content-center d-flex flex-column">
-					<p class="text-white text-center lh-sm mt-3" style="min-height: 3em; line-height: 1;" id="gamemodeDescription"></p>
-					<p class="h5 fw-bold text-white text-center" id="disclaimer"></p>
-					<div id="aiLevelsContainer"></div>
-				</div>
-			</div>
+		<div class="flex justify-center gap-4 mt-4">
+			<button class="btn text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md" id="btnPvp" data-translate="pvp">PvP</button>
+			<button class="btn text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md" id="btnAI" data-translate="vs ai">Vs AI</button>
+			<button class="btn text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md" id="btnTournament" data-translate="tournament">Tournament</button>
+		</div>
+		<div class="flex flex-col items-center mt-6">
+			<p class="text-white text-center mt-3" id="gamemodeDescription"></p>
+			<p class="text-white text-center font-bold mt-1" id="disclaimer"></p>
+			<div id="aiLevelsContainer"></div>
 		</div>
 	</div>
 `;
 
 
-// file: htmlTemplates.js (or same file if preferred)
+
+
 export const playersContainerHTML = `
-	<div class="col d-flex flex-column align-items-center glass mt-2 p-4">
-		<div class="col-10 d-flex flex-column align-items-center mt-1 mb-2">
-			<p class="h3 text-white text-center" id="leftPaddleName">player 1</p>
-			<input type="text" id="leftPaddleInput" maxlength="10" class="form-control form-control-sm text-input text-center mt-3" placeholder="Enter username" data-translate="enter-username">
-		</div>
-		<div class="col-6 d-flex flex-column align-items-center mt-1 mb-2">
-			<input type="color" id="leftPaddleColor" class="form-control form-control-sm mt-3 color-picker" value="#b3ecff">
-		</div>
+	<div class="glass mt-2 p-4 flex flex-col items-center">
+		<p class="text-white text-xl" id="leftPaddleName">Player 1</p>
+		<input type="text" id="leftPaddleInput" maxlength="10" class="mt-3 p-2 text-center rounded-md bg-gray-800 text-white" placeholder="Enter username" data-translate="enter-username">
+		<input type="color" id="leftPaddleColor" class="mt-3" value="#b3ecff">
 	</div>
-	<div class="col d-flex flex-column align-items-center glass mt-2 p-4">
-		<div class="col-10 d-flex flex-column align-items-center mt-1 mb-2">
-			<p class="h3 text-white text-center" id="rightPaddleName">player 2</p>
-			<input type="text" id="rightPaddleInput" maxlength="10" class="form-control form-control-sm text-input text-center mt-3" placeholder="Enter username" data-translate="enter-username">
-		</div>
-		<div class="col-6 d-flex flex-column align-items-center mt-1 mb-2">
-			<input type="color" id="rightPaddleColor" class="form-control form-control-sm mt-3 color-picker" value="#e09eff">
-		</div>
+	<div class="glass mt-2 p-4 flex flex-col items-center">
+		<p class="text-white text-xl" id="rightPaddleName">Player 2</p>
+		<input type="text" id="rightPaddleInput" maxlength="10" class="mt-3 p-2 text-center rounded-md bg-gray-800 text-white" placeholder="Enter username" data-translate="enter-username">
+		<input type="color" id="rightPaddleColor" class="mt-3" value="#e09eff">
 	</div>
 `;
 
 
-// templates.js (or wherever you store UI HTML blocks)
+
 export const playerBoxHTML = `
-	<div class="col d-flex flex-column align-items-center glass mt-2 p-4 player-box">
-		<div class="col-10 d-flex flex-column align-items-center mt-1 mb-2">
-			<p class="h3 text-white text-center" id="playerPaddleName">player 1</p>
-			<input type="text" id="playerPaddleInput" maxlength="10" class="form-control form-control-sm text-input text-center mt-2" placeholder="Enter username" data-translate="enter-username">	
-		</div>
-		<div class="col-6 d-flex flex-column align-items-center mt-1 mb-2">
-			<input type="color" id="playerPaddleColor" class="form-control form-control-sm mt-3 color-picker" value="#b3ecff">
-		</div>
+	<div class="glass mt-2 p-4 flex flex-col items-center">
+		<p class="text-white text-xl" id="playerPaddleName">Player 1</p>
+		<input type="text" id="playerPaddleInput" maxlength="10" class="mt-2 p-2 text-center rounded-md bg-gray-800 text-white" placeholder="Enter username" data-translate="enter-username">
+		<input type="color" id="playerPaddleColor" class="mt-3" value="#b3ecff">
 	</div>
 `;
 
-
-// templates.js or similar
 export const fourPlayersContainerHTML = `
-	<div class="col d-flex flex-column align-items-center glass mt-2 p-4">
-		<div class="col-10 d-flex flex-column align-items-center mt-1 mb-1">
-			<p class="h4 text-white text-center mb-3" id="player1Name">player 1</p>
-			<input type="text" id="player1Input" maxlength="10" class="form-control form-control-sm text-input text-center" placeholder="Enter username" data-translate="enter-username">
-		</div>
-		<div class="col-8 d-flex flex-column align-items-center mt-1 mb-1">
-			<input type="color" id="player1Color" class="form-control form-control-sm mt-3 color-picker" value="#ff0000">
-		</div>
+	<!-- Player 1 -->
+	<div class="glass mt-2 p-4 flex flex-col items-center">
+		<p class="text-white text-xl mb-3" id="player1Name">player 1</p>
+		<input 
+			type="text" 
+			id="player1Input" 
+			maxlength="10" 
+			class="p-2 mt-2 text-center rounded-md bg-gray-800 text-white placeholder-gray-400" 
+			placeholder="Enter username" 
+			data-translate="enter-username">
+		<input 
+			type="color" 
+			id="player1Color" 
+			class="mt-3" 
+			value="#ff0000">
 	</div>
-	<div class="col d-flex flex-column align-items-center glass mt-2 p-4">
-		<div class="col-10 d-flex flex-column align-items-center mt-1 mb-1">
-			<p class="h4 text-white text-center mb-3" id="player2Name">player 2</p>
-			<input type="text" id="player2Input" maxlength="10" class="form-control form-control-sm text-input text-center" placeholder="Enter username" data-translate="enter-username">
-		</div>
-		<div class="col-8 d-flex flex-column align-items-center mt-1 mb-1">
-			<input type="color" id="player2Color" class="form-control form-control-sm mt-3 color-picker" value="#00ff00">
-		</div>
+
+	<!-- Player 2 -->
+	<div class="glass mt-2 p-4 flex flex-col items-center">
+		<p class="text-white text-xl mb-3" id="player2Name">player 2</p>
+		<input 
+			type="text" 
+			id="player2Input" 
+			maxlength="10" 
+			class="p-2 mt-2 text-center rounded-md bg-gray-800 text-white placeholder-gray-400" 
+			placeholder="Enter username" 
+			data-translate="enter-username">
+		<input 
+			type="color" 
+			id="player2Color" 
+			class="mt-3" 
+			value="#00ff00">
 	</div>
-	<div class="col d-flex flex-column align-items-center glass mt-2 p-4">
-		<div class="col-10 d-flex flex-column align-items-center mt-1 mb-1">
-			<p class="h4 text-white text-center mb-3" id="player3Name">player 3</p>
-			<input type="text" id="player3Input" maxlength="10" class="form-control form-control-sm text-input text-center" placeholder="Enter username" data-translate="enter-username">
-		</div>
-		<div class="col-8 d-flex flex-column align-items-center mt-1 mb-1">
-			<input type="color" id="player3Color" class="form-control form-control-sm mt-3 color-picker" value="#0000ff">
-		</div>
+
+	<!-- Player 3 -->
+	<div class="glass mt-2 p-4 flex flex-col items-center">
+		<p class="text-white text-xl mb-3" id="player3Name">player 3</p>
+		<input 
+			type="text" 
+			id="player3Input" 
+			maxlength="10" 
+			class="p-2 mt-2 text-center rounded-md bg-gray-800 text-white placeholder-gray-400" 
+			placeholder="Enter username" 
+			data-translate="enter-username">
+		<input 
+			type="color" 
+			id="player3Color" 
+			class="mt-3" 
+			value="#0000ff">
 	</div>
-	<div class="col d-flex flex-column align-items-center glass mt-2 p-4">
-		<div class="col-10 d-flex flex-column align-items-center mt-1 mb-1">
-			<p class="h4 text-white text-center mb-3" id="player4Name">...</p>
-			<input type="text" id="player4Input" maxlength="10" class="form-control form-control-sm text-input text-center" placeholder="Enter username" data-translate="enter-username">
-		</div>
-		<div class="col-8 d-flex flex-column align-items-center mt-1 mb-1">
-			<input type="color" id="player4Color" class="form-control form-control-sm mt-3 color-picker" value="#ff00ff">
-		</div>
+
+	<!-- Player 4 -->
+	<div class="glass mt-2 p-4 flex flex-col items-center">
+		<p class="text-white text-xl mb-3" id="player4Name">...</p>
+		<input 
+			type="text" 
+			id="player4Input" 
+			maxlength="10" 
+			class="p-2 mt-2 text-center rounded-md bg-gray-800 text-white placeholder-gray-400" 
+			placeholder="Enter username" 
+			data-translate="enter-username">
+		<input 
+			type="color" 
+			id="player4Color" 
+			class="mt-3" 
+			value="#ff00ff">
 	</div>
 `;
 
 
 export const aiLevelsHTML = `
-	<div class="row justify-content-center">
-		<div class="col-6 d-flex justify-content-end">
-			<button role="button" class="btn btn-lg text-white btn-filled" id="btnEasy" data-translate="easy"></button>
-		</div>
-		<div class="col-6 d-flex justify-content-start">
-			<button role="button" class="btn btn-lg text-white btn-filled" id="btnHard" data-translate="hard"></button>
-		</div>
+	<div class="flex justify-center gap-4 mt-4">
+		<button class="btn text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md" id="btnEasy" data-translate="easy">Easy</button>
+		<button class="btn text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-md" id="btnHard" data-translate="hard">Hard</button>
 	</div>
 `;
 
-// templates.js
+
 export function getPointsRangeHTML(objective = 5) {
 	return `
-		<div class="col-6 flex-column align-items-center d-flex mb-2">
-			<div class="col-12 d-flex align-items-center justify-content-center">
-				<p class="h5 text-white text-center" style="margin-right: 10px;" data-translate="points-to-win"></p>
-				<p for="pongRangeInput" class="text-white h5 text-center" id="rangeLabel"></p>
+		<div class="flex flex-col items-center mb-2">
+			<div class="flex items-center justify-center space-x-2">
+				<p class="text-white text-lg" data-translate="points-to-win"></p>
+				<p class="text-white text-lg" id="rangeLabel"></p>
 			</div>
-			<input type="range" style="width: 70%; margin: 0 auto;" class="form-range mt-2" min="1" max="10" value="${objective}" step="1" id="pongRangeInput">
+			<input type="range" class="mt-2 w-3/4" min="1" max="10" value="${objective}" step="1" id="pongRangeInput">
 		</div>
 	`;
 }
 
 
-// templates.js or similar file
-// export function getSettingsModalHTML(keybinds) {
-// 	const safeValue = (val) => val !== "" ? val : "none";
-export function getSettingsModalHTML(keybinds: KeybindSet): string {
-	const safeValue = (val: string): string => val !== "" ? val : "none";
+export function getSettingsModalHTML(keybinds : any) {
+	const safeValue = (val : any) => (val !== "" ? val : "none");
 
 	return `
 		<div class="modal-header">
-			<h2 class="modal-title text-white w-100 text-center" data-translate="keybinds-settings"></h2>
+			<h2 class="text-white text-2xl text-center w-full" data-translate="keybinds-settings"></h2>
 		</div>
-		<div class="modal-body">
-			<div class="col-12 d-flex justify-content-center">
-				<div class="col-6">
-					<div class="row justify-content-center text-center mt-2">
-						<p class="h2 text-white" data-translate="left paddle"></p>
-					</div>
-					<div class="row justify-content-center text-center mt-1">
-						<div class="col-6 d-flex justify-content-end align-content-center">
-							<p class="text-white" style="margin-top: 5px;" data-translate="move-up"></p>
-						</div>
-						<div class="col-6 d-flex justify-content-start align-content-center">
-							<p role="button" tabindex="0" class="text-white clickable" style="max-height: 275px; border: 1px solid white; padding: 5px; border-radius: 5px;" id="lUp">${safeValue(keybinds.lUp)}</p>
-						</div>
-					</div>
-					<div class="row justify-content-center text-center">
-						<div class="col-6 d-flex justify-content-end">
-							<p class="text-white" style="margin-top: 5px;" data-translate="move-down"></p>
-						</div>
-						<div class="col-6 d-flex justify-content-start">
-							<p role="button" tabindex="0" class="text-white clickable" style="max-height: 275px; border: 1px solid white; padding: 5px; border-radius: 5px;" id="lDown">${safeValue(keybinds.lDown)}</p>
-						</div>
-					</div>
-					<div class="row justify-content-center text-center">
-						<div class="col-6 d-flex justify-content-end">
-							<p class="text-white" style="margin-top: 5px;" data-translate="minimize"></p>
-						</div>
-						<div class="col-6 d-flex justify-content-start">
-							<p role="button" tabindex="0" class="text-white clickable" style="max-height: 275px; border: 1px solid white; padding: 5px; border-radius: 5px;" id="lMini">${safeValue(keybinds.lMini)}</p>
-						</div>
-					</div>
+		<div class="modal-body flex flex-wrap justify-center">
+			<div class="w-full max-w-xl grid grid-cols-2 gap-4 mt-4">
+				<div class="text-white text-center" data-translate="left paddle">Left Paddle</div>
+				<div class="text-white text-center" data-translate="right paddle">Right Paddle</div>
+
+				<div class="text-white flex justify-between">
+					<p data-translate="move-up">Move Up</p>
+					<p class="text-white border p-1 rounded-md" id="lUp">${safeValue(keybinds.lUp)}</p>
 				</div>
-				<div class="col-6">
-					<div class="row justify-content-center text-center mt-2">
-						<p class="h2 text-white" data-translate="right paddle"></p>
-					</div>
-					<div class="row justify-content-center text-center mt-1">
-						<div class="col-6 d-flex justify-content-end">
-							<p class="text-white" style="margin-top: 5px;" data-translate="move-up"></p>
-						</div>
-						<div class="col-6 d-flex justify-content-start">
-							<p role="button" tabindex="0" class="text-white clickable" style="max-height: 275px; border: 1px solid white; padding: 5px; border-radius: 5px;" id="rUp">${safeValue(keybinds.rUp)}</p>
-						</div>
-					</div>
-					<div class="row justify-content-center text-center">
-						<div class="col-6 d-flex justify-content-end">
-							<p class="text-white" style="margin-top: 5px;" data-translate="move-down"></p>
-						</div>
-						<div class="col-6 d-flex justify-content-start">
-							<p role="button" tabindex="0" class="text-white clickable" style="max-height: 275px; border: 1px solid white; padding: 5px; border-radius: 5px;" id="rDown">${safeValue(keybinds.rDown)}</p>
-						</div>
-					</div>
-					<div class="row justify-content-center text-center">
-						<div class="col-6 d-flex justify-content-end">
-							<p class="text-white" style="margin-top: 5px;" data-translate="minimize"></p>
-						</div>
-						<div class="col-6 d-flex justify-content-start">
-							<p role="button" tabindex="0" class="text-white clickable" style="max-height: 275px; border: 1px solid white; padding: 5px; border-radius: 5px;" id="rMini">${safeValue(keybinds.rMini)}</p>
-						</div>
-					</div>
+				<div class="text-white flex justify-between">
+					<p data-translate="move-up">Move Up</p>
+					<p class="text-white border p-1 rounded-md" id="rUp">${safeValue(keybinds.rUp)}</p>
+				</div>
+
+				<div class="text-white flex justify-between">
+					<p data-translate="move-down">Move Down</p>
+					<p class="text-white border p-1 rounded-md" id="lDown">${safeValue(keybinds.lDown)}</p>
+				</div>
+				<div class="text-white flex justify-between">
+					<p data-translate="move-down">Move Down</p>
+					<p class="text-white border p-1 rounded-md" id="rDown">${safeValue(keybinds.rDown)}</p>
 				</div>
 			</div>
 		</div>
 	`;
 }
 
+//change 
 
 
 type PaddleColorSet = {
@@ -300,13 +257,22 @@ export class PongMenu {
 		this.gamestyleButton = document.getElementById('btnGamestyle')!;
 		this.btnStartGame = document.getElementById('btnStartGame') as HTMLAnchorElement;
 		this.pointsRangeContainer = document.getElementById('pointsRangeContainer')!;
-		this.settingsModal = new (window as any).bootstrap.Modal(document.getElementById('settingsModal')!);
+		// this.settingsModal = new (window as any).bootstrap.Modal(document.getElementById('settingsModal')!);
+		// this.settingsModal.classList.add('hidden');
+if (this.settingsModal) {
+    this.settingsModal.classList.add('hidden');
+} else {
+    console.error("Error: settingsModal element not found in DOM.");
+}
+
+		this.settingsModal = document.getElementById('settingsModal')!;
+
 		this.settingsModalContent = document.getElementById('settingsModalContent')!;
 		this.playersContainer = document.getElementById('playersContainer')!;
 		this.currentGamemodeLabel = document.getElementById('currentGamemodeLabel')!;
 		this.currentGamestyleLabel = document.getElementById('currentGamestyleLabel')!;
 		this.toastNotification = document.getElementById('liveToast')!;
-		this.toastBootstrap = (window as any).bootstrap.Toast.getOrCreateInstance(this.toastNotification);
+		// this.toastBootstrap = (window as any).bootstrap.Toast.getOrCreateInstance(this.toastNotification);
 		this.toastBody = document.getElementById('toastBody')!;
 		this.toastValue = document.getElementById('toastValue')!;
 		this.boundKeyDownSettings = this.keyDownSettings.bind(this);
@@ -314,6 +280,16 @@ export class PongMenu {
 		this.waitForKey = false;
 		this.waitingKey = "";
 		this.displayName = "";
+
+		// this.settingsModal.classList.add('hidden');
+		if (this.settingsModal) {
+    this.settingsModal.classList.add('hidden');
+} else {
+    console.error("Error: settingsModal element not found in DOM.");
+}
+
+	this.initializeOverlay();
+
 
 		const colorsString = localStorage.getItem('pongColors');
 		this.colors = colorsString ? JSON.parse(colorsString) : {
@@ -354,9 +330,47 @@ export class PongMenu {
 		const objectiveString = localStorage.getItem('pongObjective');
 		this.objective = objectiveString ? JSON.parse(objectiveString) : 3;
 
+		// 🔹 Add Event Listeners
+	this.keysButton.addEventListener("click", () => this.showKeysConfig());
+	this.gamemodeButton.addEventListener("click", () => this.showGamemodeConfig());
+	this.gamestyleButton.addEventListener("click", () => this.showGamestyleConfig());
+	document.addEventListener("keydown", this.boundKeyDownSettings);
+
 		this.initialize();
 	}
+	initializeOverlay() {
+	const overlay = document.createElement('div');
+	overlay.id = 'overlay';
+	overlay.className = 'fixed inset-0 bg-black bg-opacity-50 hidden';
+	document.body.appendChild(overlay);
 
+	overlay.addEventListener('click', () => {
+		// this.settingsModal.classList.add('hidden');
+		if (this.settingsModal) {
+    this.settingsModal.classList.add('hidden');
+} else {
+    console.error("Error: settingsModal element not found in DOM.");
+}
+
+		overlay.classList.add('hidden');
+	});
+
+	// Close with `Escape` key
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') {
+			// this.settingsModal.classList.add('hidden');
+			if (this.settingsModal) {
+    this.settingsModal.classList.add('hidden');
+} else {
+    console.error("Error: settingsModal element not found in DOM.");
+}
+
+			overlay.classList.add('hidden');
+		}
+	});
+}
+
+/////
 async initialize(): Promise<void> {
 	this.keysButton.addEventListener("click", () => this.showKeysConfig());
 	this.gamemodeButton.addEventListener("click", () => this.showGamemodeConfig());
@@ -370,7 +384,7 @@ async initialize(): Promise<void> {
 	this.updatePlayersContainer();
 	this.setScoreRange();
 }
-
+///////////////////
 async getLoggedUsername(): Promise<void> {
 	const response = await fetch(`${BASE_URL}/api/profile`);
 	if (response.status === 200) {
@@ -381,6 +395,7 @@ async getLoggedUsername(): Promise<void> {
 }
 
 updatePlayersContainer = (): void => {
+	this.playersContainer.innerHTML = '';
 	switch (this.gamemode) {
 		case "pvp":
 			this.playersContainer.innerHTML = playersContainerHTML;
@@ -522,7 +537,9 @@ updatePlayersContainer = (): void => {
 			playerLabel.textContent = this.usernames[playerUsername];
 			this.toastBody.textContent = `${playerName} ${getText("paddle-username-changed")}`;
 			this.toastValue.textContent = this.usernames[playerUsername];
-			this.toastBootstrap.show();
+			// this.toastBootstrap.show();
+			this.showToast();
+
 			localStorage.setItem('pongUsernames', JSON.stringify(this.usernames));
 	
 			const usernamesString = localStorage.getItem('pongUsernames');
@@ -531,7 +548,7 @@ updatePlayersContainer = (): void => {
 			};
 		}
 	}
-	
+	//////////////////////////
 	colorInputHandle(
 		event: Event,
 		name: string,
@@ -541,7 +558,9 @@ updatePlayersContainer = (): void => {
 		this.colors[player] = target.value;
 		this.toastBody.textContent = `${name} ${getText("color-changed")}`;
 		this.toastValue.textContent = "";
-		this.toastBootstrap.show();
+		// this.toastBootstrap.show();
+		this.showToast();
+
 		localStorage.setItem('pongColors', JSON.stringify(this.colors));
 	
 		const colorsString = localStorage.getItem('pongColors');
@@ -550,23 +569,54 @@ updatePlayersContainer = (): void => {
 		};
 	}
 	
-	setScoreRange(): void {
-		this.pointsRangeContainer.innerHTML = getPointsRangeHTML(this.objective);
-		const rangeInput = document.getElementById('pongRangeInput') as HTMLInputElement;
-		const rangeLabel = document.getElementById('rangeLabel') as HTMLElement;
+	// setScoreRange(): void {
+	// 	this.pointsRangeContainer.innerHTML = getPointsRangeHTML(this.objective);
+	// 	const rangeInput = document.getElementById('pongRangeInput') as HTMLInputElement;
+	// 	const rangeLabel = document.getElementById('rangeLabel') as HTMLElement;
 	
+	// 	rangeLabel.textContent = this.objective.toString();
+	// 	localStorage.setItem('pongObjective', JSON.stringify(this.objective));
+	
+	// 	rangeInput.addEventListener('input', (event: Event) => {
+	// 		const target = event.target as HTMLInputElement;
+	// 		this.objective = parseInt(target.value);
+	// 		rangeLabel.textContent = this.objective.toString();
+	// 		localStorage.setItem('pongObjective', JSON.stringify(this.objective));
+	// 	});
+	
+	// 	updateTexts();
+	// }
+	setScoreRange(): void {
+	this.pointsRangeContainer.innerHTML = `
+		<div class="flex flex-col items-center mb-2">
+			<div class="flex items-center justify-center space-x-2">
+				<p class="text-white text-lg" data-translate="points-to-win"></p>
+				<p class="text-white text-lg" id="rangeLabel">${this.objective}</p>
+			</div>
+			<input 
+				type="range" 
+				class="mt-2 w-3/4" 
+				min="1" max="10" 
+				value="${this.objective}" 
+				step="1" 
+				id="pongRangeInput"
+			>
+		</div>
+	`;
+
+	const rangeInput = document.getElementById('pongRangeInput') as HTMLInputElement;
+	const rangeLabel = document.getElementById('rangeLabel') as HTMLElement;
+
+	rangeInput.addEventListener('input', (event: Event) => {
+		const target = event.target as HTMLInputElement;
+		this.objective = parseInt(target.value);
 		rangeLabel.textContent = this.objective.toString();
 		localStorage.setItem('pongObjective', JSON.stringify(this.objective));
-	
-		rangeInput.addEventListener('input', (event: Event) => {
-			const target = event.target as HTMLInputElement;
-			this.objective = parseInt(target.value);
-			rangeLabel.textContent = this.objective.toString();
-			localStorage.setItem('pongObjective', JSON.stringify(this.objective));
-		});
-	
-		updateTexts();
-	}
+	});
+
+	updateTexts();
+}
+
 	
 	showKeysConfig(): void {
 		this.settingsModalContent.innerHTML = getSettingsModalHTML(this.keybinds);
@@ -590,14 +640,21 @@ updatePlayersContainer = (): void => {
 			});
 		};
 	
-		addEventListeners(btnLUp, "lUp");
-		addEventListeners(btnLDown, "lDown");
-		addEventListeners(btnLMini, "lMini");
-		addEventListeners(btnRUp, "rUp");
-		addEventListeners(btnRDown, "rDown");
-		addEventListeners(btnRMini, "rMini");
+	// Add event listeners to each button
+	["lUp", "lDown", "lMini", "rUp", "rDown", "rMini"].forEach((key) => {
+		const button = document.getElementById(key) as HTMLElement;
+		addEventListeners(button, key as keyof KeybindSet);
+	});
+		// addEventListeners(btnLUp, "lUp");
+		// addEventListeners(btnLDown, "lDown");
+		// addEventListeners(btnLMini, "lMini");
+		// addEventListeners(btnRUp, "rUp");
+		// addEventListeners(btnRDown, "rDown");
+		// addEventListeners(btnRMini, "rMini");
 	
-		this.settingsModal.show();
+		// this.settingsModal.show();
+		this.settingsModal.classList.remove('hidden');
+		this.openModal();
 		updateTexts();
 	}
 	
@@ -657,8 +714,9 @@ updatePlayersContainer = (): void => {
 		}
 	
 		localStorage.setItem("pongGamemode", JSON.stringify(this.gamemode));
-		this.settingsModal.show();
-	
+		// this.settingsModal.show();
+	// this.settingsModal.classList.remove('hidden');
+
 		const gamemodes: Record<string, HTMLElement> = {
 			pvp: btnPvp,
 			AI: btnAI,
@@ -666,9 +724,26 @@ updatePlayersContainer = (): void => {
 		};
 	
 		this.applySelectedSetting("pongGamemode", gamemodes);
+		this.openModal();
 		updateTexts();
 	}
-	
+	openModal(): void {
+	document.getElementById('overlay')?.classList.remove('hidden');
+	this.settingsModal.classList.remove('hidden');
+}
+
+closeModal(): void {
+	document.getElementById('overlay')?.classList.add('hidden');
+	// this.settingsModal.classList.add('hidden');
+	if (this.settingsModal) {
+    this.settingsModal.classList.add('hidden');
+} else {
+    console.error("Error: settingsModal element not found in DOM.");
+}
+
+}
+
+	//////////
 	showGamestyleConfig(): void {
 		this.settingsModalContent.innerHTML = gamestyleModalHTML;
 	
@@ -704,8 +779,10 @@ updatePlayersContainer = (): void => {
 		}
 	
 		localStorage.setItem("pongGamestyle", JSON.stringify(this.gamestyle));
-		this.settingsModal.show();
-	
+		// this.settingsModal.show();
+	// this.settingsModal.classList.remove('hidden');
+	// Open modal with a custom method
+	this.openModal();
 		const gamestyles: Record<string, HTMLElement> = {
 			legacy: btnLegacy,
 			enhanced: btnEnhanced,
@@ -722,7 +799,8 @@ selectGamemode(event: Event, gamemode: string): void {
 //	this.toastValue.textContent = getText(gamemode);
 this.toastValue.textContent = getText(gamemode) ?? null;
 
-	this.toastBootstrap.show();
+	// this.toastBootstrap.show();
+this.showToast();
 
 	this.gamemode = gamemode;
 	localStorage.setItem('pongGamemode', JSON.stringify(this.gamemode));
@@ -731,13 +809,20 @@ this.toastValue.textContent = getText(gamemode) ?? null;
 	this.showGamemodeConfig();
 	this.updatePlayersContainer();
 }
+showToast = () => {
+    this.toastNotification.classList.remove('hidden');
+    setTimeout(() => {
+        this.toastNotification.classList.add('hidden');
+    }, 3000); // 3 seconds display time
+};
 
 selectGamestyle(event: Event, gamestyle: string): void {
 	updateTextForElem(this.toastBody, "chosen-game-style");
 	//this.toastValue.textContent = getText(gamestyle);
 	this.toastValue.textContent = getText(gamestyle) ?? null;
 
-	this.toastBootstrap.show();
+	// this.toastBootstrap.show();
+     this.showToast();
 
 	if (gamestyle === "3D") {
 		this.lastGamemode = this.gamemode;
@@ -764,7 +849,8 @@ selectAIDifficulty(event: Event, difficulty: string): void {
 	//this.toastValue.textContent = getText(difficulty);
 	this.toastValue.textContent = getText(difficulty) ?? "";
 
-	this.toastBootstrap.show();
+	// this.toastBootstrap.show();
+this.showToast();
 
 	this.aiDifficulty = difficulty;
 	localStorage.setItem('pongAIDifficulty', JSON.stringify(this.aiDifficulty));
@@ -777,6 +863,8 @@ changeKeybind(event: Event, key: keyof KeybindSet, btn: HTMLElement): void {
 	this.waitForKey = true;
 	this.waitingKey = key;
 }
+
+/////
 
 keyDownSettings = (event: KeyboardEvent): void => {
 	const preventKeys = ["Space", "ArrowUp", "ArrowDown"];
@@ -831,11 +919,14 @@ keyDownSettings = (event: KeyboardEvent): void => {
 		updateTextForElem(this.toastBody, "changed-key");
 		this.toastValue.textContent = `${keyLabel} -> ${event.code}`;
 		this.waitForKey = false;
-		this.toastBootstrap.show();
+		// this.toastBootstrap.show();
+		this.showToast();
+
 		localStorage.setItem('pongKeybinds', JSON.stringify(this.keybinds));
 		this.showKeysConfig();
 	}
 }
+
 
 applySelectedSetting(
 	settingType: string,

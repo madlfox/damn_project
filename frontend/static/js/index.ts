@@ -14,9 +14,9 @@
 // import EditProfile from "./views/EditProfile.js";
 // import Friends from "./views/Friends.js";
 // import PongStatistics from "./views/PongStatistics.js";
-// import PacmanStatistics from "./views/PacmanStatistics.js";
 
-// // ------------------------------- IMPORT VISUAL EFFECTS -------------------------------
+
+// // ------------------------------- IMPORT VISUAL EFFECTS ------------------F-------------
 // import { animateLetters, initLoadTransition, initInteractiveBubble } from './visual/effects.js'
 
 // // ------------------------------- IMPORT UTILS ---------------------------------
@@ -107,6 +107,15 @@
 import Home from "./views/Home.js";
 import NotFound from "./views/NotFound.js";
 import Pong from "./views/Pong.js";
+import Profile from "./views/Profile.js";
+import SignIn from "./views/SignIn.js";
+import SignUp from "./views/SignUp.js";
+import Games from "./views/Games.js";
+ import PongMenu from "./views/PongMenu.js";
+  import PongStatistics from "./views/PongStatistics.js";
+import Friends from "./views/Friends.js";
+ import EditProfile from "./views/EditProfile.js";
+  import Settings from "./views/Settings.js";
 
 // ------------------------------- IMPORT VISUAL EFFECTS -------------------------------
 import { animateLetters, initLoadTransition, initInteractiveBubble } from './visual/effects.js';
@@ -133,7 +142,16 @@ interface View {
 const routes: { path: string, view: new () => View }[] = [
 	{ path: "/", view: Home },
 	{ path: "/404", view: NotFound },
-    { path: "/pong", view: Pong }
+    { path: "/pong", view: Pong },
+    { path: "/profile", view: Profile },
+    { path: "/signin", view: SignIn },
+    { path: "/signup", view: SignUp },
+     { path: "/games", view: Games },
+     { path: "/pongMenu", view: PongMenu },
+     { path: "/pong-statistics", view: PongStatistics },
+     { path: "/friends", view: Friends },
+     { path: "/edit-profile", view: EditProfile },
+     { path: "/settings", view: Settings }
 ];
 
 // ------------------------------- GLOBAL VIEW REFERENCE -------------------------------
