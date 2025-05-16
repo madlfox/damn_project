@@ -205,7 +205,7 @@ class PacmanGame {
 			"match_duration": ((this.timer.min * 60) + this.timer.sec),
 			"winner": winner,
 			"pacman_score": this.pacman.score,
-			"match_date": date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay(),
+			"match_date": date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
 			"user": localStorage.getItem('user_id')
 		};
 		let response = await fetch(`${BASE_URL}/api/record_pacman_match`, {

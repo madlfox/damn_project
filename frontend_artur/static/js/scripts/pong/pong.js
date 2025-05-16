@@ -240,7 +240,7 @@ export class PongGame {
 					"winner": winner,
 					"match_score": this.leftPad.score + "-" + this.rightPad.score,
 					"match_duration": ((this.timer.min * 60) + this.timer.sec),
-					"match_date": date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay(),
+					"match_date": date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
 					"user": localStorage.getItem('user_id')
 				};
 				response = await authFetch(`${BASE_URL}/api/record_PvPong_match`, {
@@ -258,7 +258,7 @@ export class PongGame {
 					"winner": winner,
 					"match_score": this.leftPad.score + "-" + this.rightPad.score,
 					"match_duration": ((this.timer.min * 60) + this.timer.sec),
-					"match_date": date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay(),
+					"match_date": date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
 					"user": localStorage.getItem('user_id')
 				};
 				response = await authFetch(`${BASE_URL}/api/record_AIpong_match`, {
@@ -271,7 +271,7 @@ export class PongGame {
 				break;
 			case "tournament":
 				matchData = {
-					"date": date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay(),
+					"date": date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
 					"player_one": this.usernames.p1,
 					"player_two": this.usernames.p2,
 					"player_three": this.usernames.p3,

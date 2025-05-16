@@ -216,7 +216,7 @@ export class pongThree {
 			"winner": winner,
 			"match_score": this.scoreLeftValue + "-" + this.scoreRightValue,
 			"match_duration": ((this.timer.min * 60) + this.timer.sec),
-			"match_date": date.getFullYear() + "-" + date.getMonth() + "-" + date.getDay(),
+			"match_date": date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
 			"user": localStorage.getItem('user_id')
 		};
 		let response = await fetch(`${BASE_URL}/api/record_PvPong_match/`, {
